@@ -1,5 +1,7 @@
+import 'package:attendance_app/screens/input_page.dart';
 import 'package:attendance_app/screens/login_page.dart';
 import 'package:attendance_app/screens/qr_scan.dart';
+import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -19,15 +21,29 @@ class MyApp extends StatelessWidget {
       ),
       home: FutureBuilder(
         builder: (BuildContext context ,AsyncSnapshot snapshot) {
-          //ログイン中ならscan画面に
-          if(false){
-            return QrScan(title: 'Flutter Demo Home Page');
+          if(snapshot.hasData){
+            return snapshot.data;
           }else{
-            return LoginPage();
+            return Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
           }
         },
+        future: setting(),
       )
     );
+  }
+  Future<Widget> setting()async{
+    //await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    await SharedPrefs.setInstance();
+    //ログイン中ならscan画面に
+    if(SharedPrefs.getLogin() != "null"){
+      return QrScan(title: 'Flutter Demo Home Page');
+    }else{
+      return InputPage(inputMode: InputMode.login,);
+    }
   }
 }
 

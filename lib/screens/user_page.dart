@@ -1,4 +1,5 @@
 import 'package:attendance_app/models/user.dart';
+import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,18 +14,7 @@ class _UserPageState extends State<UserPage> {
   final _mainReference = FirebaseDatabase.instance.reference().child("Users");
   final _textEditController = TextEditingController();
 
-  List<User> entries = new List();
-
-  @override
-  initState() {
-    super.initState();
-    _mainReference.onChildAdded.listen(_onUserAdded);
-  }
-
-  _onUserAdded(Event e) {
-      entries.add(User.fromSnapShot(e.snapshot));
-      setState((){});
-  }
+  List lists = List();
   
   @override
   Widget build(BuildContext context) {
@@ -32,48 +22,37 @@ class _UserPageState extends State<UserPage> {
       appBar: AppBar(
           title: new Text("Firebase Chat")
       ),
-      body: Container(
-          child: new Column(
-            children: <Widget>[
-              Expanded(
-                child:
-                ListView.builder(
-                  padding: const EdgeInsets.all(16.0),
-                  itemBuilder: (BuildContext context, int index) {
-                    return _buildRow(index);
-                  },
-                  itemCount: entries.length,
-                ),
-              ),
-              Divider(height: 4.0,),
-              Container(
-                  decoration: BoxDecoration(color: Theme.of(context).cardColor),
-                  child: _buildInputArea()
-              )
-            ],
+      body:
+          FutureBuilder(
+            future: _mainReference.orderByKey().equalTo(SharedPrefs.getLogin()).once(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                lists.clear();
+                Map<dynamic, dynamic> values = snapshot.data.value;
+                values.forEach((key, values) {
+                  lists.add(values);
+                });
+                return new ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: lists.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text("社員番号: "+ lists[index]["employeeId"]),
+                            Text("パスワード: " +lists[index]["password"]),
+                            Text((lists[index]["employeeId"] == User("0001","1000","aaaa").employeeId) ? "yes":"no")
+                          ],
+                        ),
+                      );
+                    });
+              }
+              return CircularProgressIndicator();
+            },
           )
-      ),
+
     );
-  }
-
-  // 投稿されたメッセージの1行を表示するWidgetを生成
-  Widget _buildRow(int index) {
-    if(entries[index].companyId == "0001"){
-      return Card(
-          child: ListTile(
-              title: Column(
-                children: [
-                  Text(entries[index].companyId),
-                  Text(entries[index].employeeId),
-                  Text(entries[index].password)
-                ],
-              )
-          )
-      );
-    }else{
-      return Container();
-    }
-
   }
 
   // 投稿メッセージの入力部分のWidgetを生成
@@ -89,7 +68,7 @@ class _UserPageState extends State<UserPage> {
         CupertinoButton(
           child: Text("Send"),
           onPressed: () {
-            _mainReference.push().set(User("0002", "1000","aaaa").toJson());
+            _mainReference.push().set(User("0001", "1000","aaaa").toJson());
             _textEditController.clear();
             // キーボードを閉じる
             FocusScope.of(context).requestFocus(FocusNode());

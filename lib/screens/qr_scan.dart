@@ -1,7 +1,12 @@
+import 'package:attendance_app/main.dart';
 import 'package:attendance_app/screens/user_page.dart';
+import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+
 
 class QrScan extends StatefulWidget {
   QrScan({Key key, this.title}) : super(key: key);
@@ -35,7 +40,13 @@ class _QrScanState extends State<QrScan> {
               child: Text('QR SCAN', style: TextStyle(color: Colors.white),),
               onPressed: scan,
             ),
-            (scanResult != null) ? Text(scanResult.rawContent ?? ""):Text("")
+            (scanResult != null) ? Text(scanResult.rawContent ?? ""):Text(""),
+            logout(),
+            QrImage(
+              data: "1100",
+              version: QrVersions.auto,
+              size: 200.0,
+            ),
           ],
         ),
       ),
@@ -87,4 +98,23 @@ class _QrScanState extends State<QrScan> {
       });
     }
   }
+ Widget logout(){
+   return InkWell(
+     child: Container(
+         height: 50,
+         child: Center(child: Text("ログアウト"))),
+     onTap: () async {
+       SharedPrefs.setLogin("null");
+       await Navigator.of(context).push(
+         MaterialPageRoute(
+           builder: (context) {
+             return MyApp();
+           },
+         ),
+       );
+       setState(() {});
+     },
+   );
+  }
 }
+//DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now())

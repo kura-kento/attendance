@@ -90,6 +90,8 @@ PODS:
   - nanopb/decode (1.30905.0)
   - nanopb/encode (1.30905.0)
   - PromisesObjC (1.2.8)
+  - shared_preferences (0.0.1):
+    - Flutter
   - SwiftProtobuf (1.8.0)
 
 DEPENDENCIES:
@@ -100,6 +102,7 @@ DEPENDENCIES:
   - firebase_core_web (from `.symlinks/plugins/firebase_core_web/ios`)
   - firebase_database (from `.symlinks/plugins/firebase_database/ios`)
   - Flutter (from `Flutter`)
+  - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
 
 SPEC REPOS:
   trunk:
@@ -132,6 +135,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/firebase_database/ios"
   Flutter:
     :path: Flutter
+  shared_preferences:
+    :path: ".symlinks/plugins/shared_preferences/ios"
 
 SPEC CHECKSUMS:
   barcode_scan: a5c27959edfafaa0c771905bad0b29d6d39e4479
@@ -155,6 +160,7 @@ SPEC CHECKSUMS:
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
   nanopb: c43f40fadfe79e8b8db116583945847910cbabc9
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
+  shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   SwiftProtobuf: 2cbd9409689b7df170d82a92a33443c8e3e14a70
 
 PODFILE CHECKSUM: 356ed46c33717765a141a78901b7451d21f62755
