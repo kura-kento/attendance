@@ -40,11 +40,11 @@ class MyApp extends StatelessWidget {
     await SharedPrefs.setInstance();
     //ログイン中ならscan画面に
     if(SharedPrefs.getLogin() != "null"){
-      return QrScan(title: 'Flutter Demo Home Page');
+      return QrScan();
     }else{
-      return InputPage(inputMode: InputMode.login,);
+      return LoginPage(title: "aaa",);
     }
   }
 }
-
+//InputPage(inputMode: InputMode.login,)
 

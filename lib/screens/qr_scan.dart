@@ -2,16 +2,14 @@ import 'package:attendance_app/main.dart';
 import 'package:attendance_app/screens/user_page.dart';
 import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 
 class QrScan extends StatefulWidget {
-  QrScan({Key key, this.title}) : super(key: key);
 
-  final String title;
 
   @override
   _QrScanState createState() => _QrScanState();
@@ -20,6 +18,8 @@ class QrScan extends StatefulWidget {
 class _QrScanState extends State<QrScan> {
   ScanResult scanResult;
 
+  final _attendanceRef = FirebaseDatabase.instance.reference().child("Attendance");
+
   @override
   void initState() {
     scan();
@@ -27,9 +27,11 @@ class _QrScanState extends State<QrScan> {
   }
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("スキャン"),
       ),
       body: Center(
         child: Column(
@@ -74,28 +76,20 @@ class _QrScanState extends State<QrScan> {
           "flash_off" : "ライトオフ"
         }
       );
-      var result = await BarcodeScanner.scan(
-          options: options
-      );
-      setState(() {
-        scanResult = result;
-      });
+      var result = await BarcodeScanner.scan(options: options);
+      scanResult = result;
     } on PlatformException catch (e) {
       var result = ScanResult(
         type: ResultType.Error,
         format: BarcodeFormat.unknown,
       );
       if (e.code == BarcodeScanner.cameraAccessDenied) {
-        setState(() {
-          result.rawContent = 'カメラへのアクセスが許可されていません!';
-        });
+        result.rawContent = 'カメラへのアクセスが許可されていません!';
+
       } else {
         result.rawContent = 'エラー: $e';
       }
-      setState(() {
-        scanResult = result;
-        scanResult.rawContent = "打刻に成功しました！";
-      });
+       setState(() {});
     }
   }
  Widget logout(){
@@ -116,5 +110,6 @@ class _QrScanState extends State<QrScan> {
      },
    );
   }
+
 }
 //DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now())
