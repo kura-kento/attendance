@@ -16,6 +16,6 @@ class SharedPrefs {
   static String getLogin() => _sharedPreferences.getString(login) ?? 'null';
 
   static Future<bool> setUser(List<String> value) => _sharedPreferences.setStringList(user, value);
-  static List<String> getUser() => _sharedPreferences.getStringList(user) ?? ["","","","","1"];
+  static List<String> getUser() => _sharedPreferences.getStringList(user) ?? [];
 
 }

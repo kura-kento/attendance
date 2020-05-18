@@ -58,12 +58,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  void transitionNextPage(FirebaseUser user) {
-    if (user == null) return;
-    Navigator.push(context, MaterialPageRoute(builder: (context) =>
-        NextPage()
-    ));
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,20 +86,20 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  signIn(uid)async{
+  signIn(userData)async{
     var userSearch;
-    userSearch = entries.where((user) => user.uid == uid.uid).toList();
+    userSearch = entries.where((user) => user.uid == userData.uid).toList();
 
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
               if(userSearch.length != 0){
         //      _basicsFlash(duration: Duration(seconds: 2),text: "ログインに成功しました。");
-        //      SharedPrefs.setLogin(userSearch[0].key);
+              SharedPrefs.setUser([userSearch[0].companyId,userSearch[0].employeeId,userSearch[0].name,userSearch[0].uid,userSearch[0].division.toString()]);
                 return QrScan();
               }else {
                 print("失敗しました。");
-                return InputPage(inputMode: InputMode.employee, uid: uid.uid);
+                return InputPage(uid: userData.uid);
               }
           },
         ),
@@ -112,58 +107,4 @@ class _LoginPageState extends State<LoginPage> {
       setState(() {});
     //  _basicsFlash(duration: Duration(seconds: 2),text: "ログインに失敗しました。");
     }
-
-}
-
-class NextPage extends StatefulWidget {
-
-  @override
-  _NextPageState createState() => _NextPageState();
-}
-
-class _NextPageState extends State<NextPage> {
-
-
-  Future<void> _handleSignOut() async {
-    await FirebaseAuth.instance.signOut();
-    try {
-      await GoogleSignIn().signOut();
-    } catch (e) {
-      print(e);
-    }
-    SharedPrefs.setUser([]);
-    Navigator.pop(context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("ユーザー情報表示"),
-      ),
-      body: Center(
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image.network(SharedPrefs.getUser()[2]),
-              Text(SharedPrefs.getUser()[0],
-                style: TextStyle(
-                  fontSize: 24,
-                ),
-              ),
-              Text(SharedPrefs.getUser()[1],
-                style: TextStyle(
-                  fontSize: 24,
-                ),
-              ),
-              RaisedButton(
-                child: Text('ログアウト'),
-                onPressed: () {
-                  _handleSignOut().catchError((e) => print(e));
-                },
-              ),
-            ]),
-      ),
-    );
-  }
 }

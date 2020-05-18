@@ -1,5 +1,5 @@
 import 'package:attendance_app/main.dart';
-import 'package:attendance_app/screens/input_page.dart';
+import 'package:attendance_app/models/stamp.dart';
 import 'package:attendance_app/screens/user_page.dart';
 import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:barcode_scan/barcode_scan.dart';
@@ -8,6 +8,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 
@@ -18,15 +19,11 @@ class QrScan extends StatefulWidget {
 }
 
 class _QrScanState extends State<QrScan> {
+  int division;
   ScanResult scanResult;
 
-  final _attendanceRef = FirebaseDatabase.instance.reference().child("Attendance");
+  final _stampRef = FirebaseDatabase.instance.reference().child("Stamp");
 
-  @override
-  void initState() {
-    scan();
-    super.initState();
-  }
   @override
   Widget build(BuildContext context) {
 
@@ -39,13 +36,31 @@ class _QrScanState extends State<QrScan> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            FlatButton(
-              color: Colors.blueAccent,
-              child: Text('QR SCAN', style: TextStyle(color: Colors.white),),
-              onPressed: scan,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FlatButton(
+                  color: Colors.redAccent,
+                  child: Text('出勤', style: TextStyle(color: Colors.white),),
+                  onPressed: (){
+                    division=0;
+                    scan();
+                  },
+                ),
+                FlatButton(
+                  color: Colors.blueAccent,
+                  child: Text('退勤', style: TextStyle(color: Colors.white),),
+                  onPressed: (){
+                    division=1;
+                    scan();
+                  },
+                ),
+              ],
             ),
-            (scanResult != null) ? Text(scanResult.rawContent ?? ""):Text(""),
+            (scanResult != null) ? Text(scanResult.rawContent ?? "データがnull"):Text("スキャン出来ていない"),
+            Divider(color: Colors.grey,height:0),
             logout(),
+            Divider(color: Colors.grey,height:0),
 
             (SharedPrefs.getUser()[4]=="0") ? QrImage(data: SharedPrefs.getUser()[0], version: QrVersions.auto, size: 200.0,) : Container(),
           ],
@@ -77,6 +92,7 @@ class _QrScanState extends State<QrScan> {
       );
       var result = await BarcodeScanner.scan(options: options);
       scanResult = result;
+      stamp(result.rawContent);
     } on PlatformException catch (e) {
       var result = ScanResult(
         type: ResultType.Error,
@@ -88,13 +104,17 @@ class _QrScanState extends State<QrScan> {
       } else {
         result.rawContent = 'エラー: $e';
       }
-      stamp();
-      setState(() {});
     }
+    setState(() {});
   }
 
-  void stamp(){
-
+  void stamp(companyId){
+    if(SharedPrefs.getUser()[0] == companyId){
+      _stampRef.push().set(Stamp(SharedPrefs.getUser()[3],DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now()),division).toJson());
+      print("stampテーブルに保存");
+    }else{
+      print("stampテーブルに保存が失敗");
+    }
   }
 
  Widget logout(){
@@ -103,7 +123,7 @@ class _QrScanState extends State<QrScan> {
          height: 50,
          child: Center(child: Text("ログアウト"))),
      onTap: () async {
-       SharedPrefs.setLogin("null");
+       SharedPrefs.setUser([]);
        _handleSignOut().catchError((e) => print(e));
        await Navigator.of(context).push(
          MaterialPageRoute(

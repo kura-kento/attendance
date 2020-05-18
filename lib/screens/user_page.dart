@@ -11,7 +11,7 @@ class UserPage extends StatefulWidget {
 
 class _UserPageState extends State<UserPage> {
 
-  final _mainReference = FirebaseDatabase.instance.reference().child("Users");
+  final _stampRef = FirebaseDatabase.instance.reference().child("Stamp");
   final _textEditController = TextEditingController();
 
   List lists = List();
@@ -24,7 +24,7 @@ class _UserPageState extends State<UserPage> {
       ),
       body:
           FutureBuilder(
-            future: _mainReference.orderByKey().equalTo(SharedPrefs.getLogin()).once(),
+            future: _stampRef.orderByChild("uid").equalTo("2wobWLNHvhQRgphaMcCIwqnCYaL2").once(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 lists.clear();
@@ -32,7 +32,7 @@ class _UserPageState extends State<UserPage> {
                 values.forEach((key, values) {
                   lists.add(values);
                 });
-                return new ListView.builder(
+                return ListView.builder(
                     shrinkWrap: true,
                     itemCount: lists.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -40,9 +40,9 @@ class _UserPageState extends State<UserPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text("社員番号: "+ lists[index]["employeeId"]),
-                            Text("パスワード: " +lists[index]["password"]),
-                            Text((lists[index]["employeeId"] == User("0001","1000","aaaa","bbbb",1).employeeId) ? "yes":"no")
+                            Text("${SharedPrefs.getUser()[3]}: "+ lists[index]["uid"]),
+                            Text("パスワード: " +lists[index]["date"]),
+                            Text((lists[index]["division"] == 0) ? "出勤":"退勤")
                           ],
                         ),
                       );
@@ -68,7 +68,7 @@ class _UserPageState extends State<UserPage> {
         CupertinoButton(
           child: Text("Send"),
           onPressed: () {
-            _mainReference.push().set(User("0001", "1000","aaaa","vvvv",1).toJson());
+           // _stampRef.push().set(User("0001", "1000","aaaa","vvvv",1).toJson());
             _textEditController.clear();
             // キーボードを閉じる
             FocusScope.of(context).requestFocus(FocusNode());

@@ -13,12 +13,10 @@ enum InputMode{
   employee
 }
 
-
 class InputPage extends StatefulWidget {
 
-  InputPage({Key key, this.inputMode,this.uid}) : super(key: key);
+  InputPage({Key key,this.uid}) : super(key: key);
 
-  final InputMode inputMode;
   final String uid;
 
   @override
@@ -29,11 +27,8 @@ class _InputPageState extends State<InputPage> {
 
   TextEditingController companyController = TextEditingController();
   TextEditingController employeeController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
   TextEditingController nameController = TextEditingController();
   TextEditingController adminController = TextEditingController();
-
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   FirebaseUser user;
 
@@ -57,7 +52,7 @@ class _InputPageState extends State<InputPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.inputMode == InputMode.employee ? "ログイン": "それ以外"),
+          title: Text("新規登録画面"),
         ),
         body: GestureDetector(
           onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
@@ -66,25 +61,27 @@ class _InputPageState extends State<InputPage> {
               children: [
                 Container(height: 50,),
                 Column(children: loginFormList()),
-                btnMode(),
+                InkWell(
+                  child:Container(
+                      height: 50,
+                      child: Center(child:Text("登録"))),
+                  onTap: () async{
+                    await save();
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) {
+                              return QrScan();
+                            }
+                        )
+                    );
+                    setState(() {});
+                  },
+                )
               ],
             ),
           ),
         ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){
-            register();
-        },
-      ),
     );
-
-  }
-  Future<void> register()async{
-    final FirebaseUser user = (await _firebaseAuth.createUserWithEmailAndPassword(
-    email: 'an email',
-    password: 'a password',
-    ))
-    .user;
   }
 
   List<Widget>loginFormList(){
@@ -143,67 +140,8 @@ class _InputPageState extends State<InputPage> {
 //    }
 //  }
 
-  Widget btnMode(){
 
-    if(widget.inputMode == InputMode.employee){
-      return Column(
-        children: [
-          InkWell(
-            child:Container(
-                height: 50,
-                child: Center(child:Text("登録"))),
-            onTap: () async{
-              await save();
-              Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) {
-                   return QrScan();
-                    }
-                  )
-              );
-              setState(() {});
-            },
-          ),
-          InkWell(
-            child:Container(
-                height: 50,
-                child: Center(child:Text("管理者用"))),
-            onTap: () async{
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) {
-                    return InputPage(inputMode: InputMode.admin);
-                  },
-                ),
-              );
-              setState(() {});
-            },
-          ),
-        ],
-      );
-    }else if(widget.inputMode == InputMode.admin){
-      return InkWell(
-        child:Container(
-            height: 50,
-            child: Center(child:Text("新規登録"))),
-        onTap: ()async{
-          await save();
-          setState(() {});
-        },
-      );
-    }else{
-      return InkWell(
-        child:Container(
-            height: 50,
-            child: Center(child:Text("社員追加"))),
-        onTap: ()async{
-          await save();
-          setState(() {});
-        },
-      );
-    }
 
-  }
    save(){
     _mainReference.push().set(User(companyController.text, employeeController.text,nameController.text,widget.uid,int.parse(adminController.text)).toJson());
     FocusScope.of(context).requestFocus(FocusNode());

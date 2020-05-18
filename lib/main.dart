@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
     //await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     await SharedPrefs.setInstance();
     //ログイン中ならscan画面に
-    if(SharedPrefs.getLogin() != "null"){
+    if(SharedPrefs.getUser().length != 0){
       return QrScan();
     }else{
       return LoginPage();
