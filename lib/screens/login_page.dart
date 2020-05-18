@@ -1,19 +1,39 @@
+import 'package:attendance_app/models/user.dart';
+import 'package:attendance_app/screens/qr_scan.dart';
+import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class LoginPage extends StatefulWidget {
-  LoginPage({Key key, this.title}) : super(key: key);
+import 'input_page.dart';
 
-  final String title;
+class LoginPage extends StatefulWidget {
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _MyHomePageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> {
+
+  TextEditingController companyController = TextEditingController();
+  TextEditingController employeeController = TextEditingController();
+
+  final _mainReference = FirebaseDatabase.instance.reference().child("Users");
+  List<User> entries = List();
+
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  initState() {
+    super.initState();
+    _mainReference.onChildAdded.listen(_onUserAdded);
+  }
+
+  _onUserAdded(Event e) {
+    entries.add(User.fromSnapShot(e.snapshot));
+    setState((){});
+  }
 
   Future<FirebaseUser> _handleSignIn() async {
     GoogleSignInAccount googleCurrentUser = _googleSignIn.currentUser;
@@ -28,8 +48,9 @@ class _MyHomePageState extends State<LoginPage> {
         idToken: googleAuth.idToken,
       );
       final FirebaseUser user = (await _auth.signInWithCredential(credential)).user;
-      print("signed in " + user.displayName);
+      print("ログイン中： " + user.uid);
 
+//      SharedPrefs.setUser([user.displayName,user.email,user.photoUrl]);
       return user;
     } catch (e) {
       print(e);
@@ -39,9 +60,8 @@ class _MyHomePageState extends State<LoginPage> {
 
   void transitionNextPage(FirebaseUser user) {
     if (user == null) return;
-
     Navigator.push(context, MaterialPageRoute(builder: (context) =>
-        NextPage(userData: user)
+        NextPage()
     ));
   }
 
@@ -49,18 +69,18 @@ class _MyHomePageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("ログイン画面"),
       ),
       body: Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               RaisedButton(
-                child: Text('Sign in Google'),
+                child: Text('ログイン'),
                 onPressed: () {
                   _handleSignIn()
                       .then((FirebaseUser user) =>
-                      transitionNextPage(user)
+                      signIn(user)
                   )
                       .catchError((e) => print(e));
                 },
@@ -70,38 +90,48 @@ class _MyHomePageState extends State<LoginPage> {
       ),
     );
   }
+
+  signIn(uid)async{
+    var userSearch;
+    userSearch = entries.where((user) => user.uid == uid.uid).toList();
+
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+              if(userSearch.length != 0){
+        //      _basicsFlash(duration: Duration(seconds: 2),text: "ログインに成功しました。");
+        //      SharedPrefs.setLogin(userSearch[0].key);
+                return QrScan();
+              }else {
+                print("失敗しました。");
+                return InputPage(inputMode: InputMode.employee, uid: uid.uid);
+              }
+          },
+        ),
+      );
+      setState(() {});
+    //  _basicsFlash(duration: Duration(seconds: 2),text: "ログインに失敗しました。");
+    }
+
 }
 
 class NextPage extends StatefulWidget {
-  FirebaseUser userData;
-
-  NextPage({Key key, this.userData}) : super(key: key);
 
   @override
-  _NextPageState createState() => _NextPageState(userData);
+  _NextPageState createState() => _NextPageState();
 }
 
 class _NextPageState extends State<NextPage> {
-  FirebaseUser userData;
-  String name = "";
-  String email;
-  String photoUrl;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  _NextPageState(FirebaseUser userData) {
-    this.userData = userData;
-    this.name = userData.displayName;
-    this.email = userData.email;
-    this.photoUrl = userData.photoUrl;
-  }
 
   Future<void> _handleSignOut() async {
     await FirebaseAuth.instance.signOut();
     try {
-      await _googleSignIn.signOut();
+      await GoogleSignIn().signOut();
     } catch (e) {
       print(e);
     }
+    SharedPrefs.setUser([]);
     Navigator.pop(context);
   }
 
@@ -115,19 +145,19 @@ class _NextPageState extends State<NextPage> {
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.network(this.photoUrl),
-              Text(this.name,
+              Image.network(SharedPrefs.getUser()[2]),
+              Text(SharedPrefs.getUser()[0],
                 style: TextStyle(
                   fontSize: 24,
                 ),
               ),
-              Text(this.email,
+              Text(SharedPrefs.getUser()[1],
                 style: TextStyle(
                   fontSize: 24,
                 ),
               ),
               RaisedButton(
-                child: Text('Sign Out Google'),
+                child: Text('ログアウト'),
                 onPressed: () {
                   _handleSignOut().catchError((e) => print(e));
                 },

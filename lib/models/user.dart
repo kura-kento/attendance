@@ -4,21 +4,29 @@ class User{
   String key;
   String companyId;
   String employeeId;
-  String password;
+  String name;
+  String uid;
+  int division;
 
-  User(this.companyId,this.employeeId,this.password);
+//承認（bool）と区分（int）も追加
+
+  User(this.companyId,this.employeeId,this.name,this.uid,this.division);
 
   User.fromSnapShot(DataSnapshot snapshot):
   key = snapshot.key,
   companyId = snapshot.value["companyId"],
   employeeId = snapshot.value["employeeId"],
-  password = snapshot.value["password"];
+  name = snapshot.value["name"],
+  uid = snapshot.value["uid"],
+  division = int.parse(snapshot.value["division"]);
 
   toJson() {
     return {
       "companyId": companyId,
       "employeeId": employeeId,
-      "password": password,
+      "name": name,
+      "uid": uid,
+      "division": division.toString(),
     };
   }
 }

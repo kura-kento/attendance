@@ -1,15 +1,17 @@
 import 'package:attendance_app/main.dart';
+import 'package:attendance_app/screens/input_page.dart';
 import 'package:attendance_app/screens/user_page.dart';
 import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 
 class QrScan extends StatefulWidget {
-
 
   @override
   _QrScanState createState() => _QrScanState();
@@ -44,11 +46,8 @@ class _QrScanState extends State<QrScan> {
             ),
             (scanResult != null) ? Text(scanResult.rawContent ?? ""):Text(""),
             logout(),
-            QrImage(
-              data: "1100",
-              version: QrVersions.auto,
-              size: 200.0,
-            ),
+
+            (SharedPrefs.getUser()[4]=="0") ? QrImage(data: SharedPrefs.getUser()[0], version: QrVersions.auto, size: 200.0,) : Container(),
           ],
         ),
       ),
@@ -89,9 +88,15 @@ class _QrScanState extends State<QrScan> {
       } else {
         result.rawContent = 'エラー: $e';
       }
-       setState(() {});
+      stamp();
+      setState(() {});
     }
   }
+
+  void stamp(){
+
+  }
+
  Widget logout(){
    return InkWell(
      child: Container(
@@ -99,6 +104,7 @@ class _QrScanState extends State<QrScan> {
          child: Center(child: Text("ログアウト"))),
      onTap: () async {
        SharedPrefs.setLogin("null");
+       _handleSignOut().catchError((e) => print(e));
        await Navigator.of(context).push(
          MaterialPageRoute(
            builder: (context) {
@@ -110,6 +116,13 @@ class _QrScanState extends State<QrScan> {
      },
    );
   }
-
+  Future<void> _handleSignOut() async {
+    await FirebaseAuth.instance.signOut();
+    try {
+      await GoogleSignIn().signOut();
+    } catch (e) {
+      print(e);
+    }
+  }
 }
 //DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now())

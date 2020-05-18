@@ -8,7 +8,6 @@ PODS:
     - Flutter
     - MTBBarcodeScanner
     - SwiftProtobuf
-  - Firebase (2.4.1.1)
   - Firebase/Analytics (6.24.0):
     - Firebase/Core
   - Firebase/Auth (6.24.0):
@@ -73,8 +72,12 @@ PODS:
     - GoogleUtilities/Environment (~> 6.6)
     - GoogleUtilities/UserDefaults (~> 6.6)
     - PromisesObjC (~> 1.2)
-  - FirebaseUI (0.2.6):
-    - Firebase (~> 2.4.1.1)
+  - FirebaseUI/Auth (8.4.2):
+    - Firebase/Auth (~> 6.0)
+    - GoogleUtilities/UserDefaults
+  - FirebaseUI/Google (8.4.2):
+    - FirebaseUI/Auth
+    - GoogleSignIn (~> 5.0)
   - Flutter (1.0.0)
   - flutter_secure_storage (3.3.1):
     - Flutter
@@ -145,7 +148,8 @@ DEPENDENCIES:
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_core_web (from `.symlinks/plugins/firebase_core_web/ios`)
   - firebase_database (from `.symlinks/plugins/firebase_database/ios`)
-  - FirebaseUI
+  - FirebaseUI/Auth
+  - FirebaseUI/Google
   - Flutter (from `Flutter`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
@@ -219,7 +223,7 @@ SPEC CHECKSUMS:
   FirebaseCoreDiagnosticsInterop: 296e2c5f5314500a850ad0b83e9e7c10b011a850
   FirebaseDatabase: 4e99c0c475d1ee0aa64ae2b53c93f80b7b60d7d9
   FirebaseInstallations: 2119fb3e46b0a88bfdbf12562f855ee3252462fa
-  FirebaseUI: 9d251f663c439aa22f79249d7d00a9ec09087fe4
+  FirebaseUI: e57e9b9c4340631151fbe67a14206d23d0974f37
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
   google_sign_in: 6bd214b9c154f881422f5fe27b66aaa7bbd580cc
@@ -238,6 +242,6 @@ SPEC CHECKSUMS:
   shared_preferences: 1feebfa37bb57264736e16865e7ffae7fc99b523
   SwiftProtobuf: 2cbd9409689b7df170d82a92a33443c8e3e14a70
 
-PODFILE CHECKSUM: c8b3e51a5407cfaf1570f14dd7dda2381c253edf
+PODFILE CHECKSUM: d79a9b5f814497ca7c53bdbd2604007f33610579
 
 COCOAPODS: 1.9.1

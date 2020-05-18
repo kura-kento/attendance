@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
     if(SharedPrefs.getLogin() != "null"){
       return QrScan();
     }else{
-      return LoginPage(title: "aaa",);
+      return LoginPage();
     }
   }
 }

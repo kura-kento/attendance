@@ -9,17 +9,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 enum InputMode{
-  login,
-  admin_create,
-  employee_create
+  admin,
+  employee
 }
 
 
 class InputPage extends StatefulWidget {
 
-  InputPage({Key key, this.inputMode}) : super(key: key);
+  InputPage({Key key, this.inputMode,this.uid}) : super(key: key);
 
   final InputMode inputMode;
+  final String uid;
 
   @override
   _InputPageState createState() => _InputPageState();
@@ -30,7 +30,9 @@ class _InputPageState extends State<InputPage> {
   TextEditingController companyController = TextEditingController();
   TextEditingController employeeController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController password = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController adminController = TextEditingController();
+
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   FirebaseUser user;
@@ -55,7 +57,7 @@ class _InputPageState extends State<InputPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.inputMode == InputMode.login ? "ログイン": "それ以外"),
+          title: Text(widget.inputMode == InputMode.employee ? "ログイン": "それ以外"),
         ),
         body: GestureDetector(
           onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
@@ -86,8 +88,8 @@ class _InputPageState extends State<InputPage> {
   }
 
   List<Widget>loginFormList(){
-    List<String> titles = ['会社番号','メールアドレス','パスワード'];
-    List<TextEditingController> controllers = [companyController,emailController,password];
+    List<String> titles = ['会社番号','社員番号',"名前","管理者区分"];
+    List<TextEditingController> controllers = [companyController,employeeController,nameController,adminController];
 
     List<Map<String, dynamic>> mapList = <Map<String, dynamic>>[];
     for(int i=0;i < titles.length ;i++){
@@ -105,6 +107,7 @@ class _InputPageState extends State<InputPage> {
           padding: EdgeInsets.only(top: 10.0, right: 40.0, bottom: 10.0, left: 40.0),
           child: TextField(
             controller: controllers[i],
+            keyboardType: (i == 3)? TextInputType.number : TextInputType.text ,
             style: textStyle,
             decoration: InputDecoration(
                 labelText: titles[i],
@@ -139,24 +142,25 @@ class _InputPageState extends State<InputPage> {
 //      _basicsFlash(duration: Duration(seconds: 2),text: "ログインに失敗しました。");
 //    }
 //  }
-  Future<AuthResult> signIn(String email, String password) async {
-    final AuthResult result = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-    print("User id is ${result.user.uid}");
-    return result;
-  }
 
   Widget btnMode(){
 
-    if(widget.inputMode == InputMode.login){
+    if(widget.inputMode == InputMode.employee){
       return Column(
         children: [
           InkWell(
             child:Container(
                 height: 50,
-                child: Center(child:Text("ログイン"))),
-            onTap: ()async{
-              await signIn(emailController.text,password.text);
+                child: Center(child:Text("登録"))),
+            onTap: () async{
+              await save();
+              Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) {
+                   return QrScan();
+                    }
+                  )
+              );
               setState(() {});
             },
           ),
@@ -168,7 +172,7 @@ class _InputPageState extends State<InputPage> {
               await Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) {
-                    return InputPage(inputMode: InputMode.admin_create);
+                    return InputPage(inputMode: InputMode.admin);
                   },
                 ),
               );
@@ -177,7 +181,7 @@ class _InputPageState extends State<InputPage> {
           ),
         ],
       );
-    }else if(widget.inputMode == InputMode.admin_create){
+    }else if(widget.inputMode == InputMode.admin){
       return InkWell(
         child:Container(
             height: 50,
@@ -200,15 +204,12 @@ class _InputPageState extends State<InputPage> {
     }
 
   }
-  save(){
-    var _cache;
-    _cache = _mainReference.push().set(User(companyController.text, employeeController.text,password.text).toJson());
-  //  _textEditController.clear();
+   save(){
+    _mainReference.push().set(User(companyController.text, employeeController.text,nameController.text,widget.uid,int.parse(adminController.text)).toJson());
     FocusScope.of(context).requestFocus(FocusNode());
-    if(widget.inputMode == InputMode.admin_create){
+    SharedPrefs.setUser([companyController.text, employeeController.text,nameController.text,widget.uid,adminController.text]);
       //ログイン状態いじ
-      SharedPrefs.setLogin(_cache.key);
-    }
+    SharedPrefs.setLogin(widget.uid);
   }
 
   void _basicsFlash({

@@ -1,13 +1,13 @@
 import 'package:firebase_database/firebase_database.dart';
 
-class Attendance{
+class Stamp{
   String key;
   String date;
   int division;
 
-  Attendance(this.date,this.division);
+  Stamp(this.date,this.division);
 
-  Attendance.fromSnapShot(DataSnapshot snapshot):
+  Stamp.fromSnapShot(DataSnapshot snapshot):
         key = snapshot.key,
         date = snapshot.value["date"],
         division = snapshot.value["division"];

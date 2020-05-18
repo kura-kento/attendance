@@ -42,7 +42,7 @@ class _UserPageState extends State<UserPage> {
                           children: <Widget>[
                             Text("社員番号: "+ lists[index]["employeeId"]),
                             Text("パスワード: " +lists[index]["password"]),
-                            Text((lists[index]["employeeId"] == User("0001","1000","aaaa").employeeId) ? "yes":"no")
+                            Text((lists[index]["employeeId"] == User("0001","1000","aaaa","bbbb",1).employeeId) ? "yes":"no")
                           ],
                         ),
                       );
@@ -68,7 +68,7 @@ class _UserPageState extends State<UserPage> {
         CupertinoButton(
           child: Text("Send"),
           onPressed: () {
-            _mainReference.push().set(User("0001", "1000","aaaa").toJson());
+            _mainReference.push().set(User("0001", "1000","aaaa","vvvv",1).toJson());
             _textEditController.clear();
             // キーボードを閉じる
             FocusScope.of(context).requestFocus(FocusNode());
