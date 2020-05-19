@@ -23,33 +23,39 @@ class _UserPageState extends State<UserPage> {
           title: new Text("Firebase Chat")
       ),
       body:
-          FutureBuilder(
-            future: _stampRef.orderByChild("uid").equalTo("2wobWLNHvhQRgphaMcCIwqnCYaL2").once(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                lists.clear();
-                Map<dynamic, dynamic> values = snapshot.data.value;
-                values.forEach((key, values) {
-                  lists.add(values);
-                });
-                return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: lists.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Card(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text("${SharedPrefs.getUser()[3]}: "+ lists[index]["uid"]),
-                            Text("パスワード: " +lists[index]["date"]),
-                            Text((lists[index]["division"] == 0) ? "出勤":"退勤")
-                          ],
-                        ),
-                      );
+          Container(
+            child: FutureBuilder(
+              future: _stampRef.orderByChild("uid").equalTo(SharedPrefs.getUser()[3]).once(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  if(snapshot.data == null){
+                    lists.clear();
+                    Map<dynamic, dynamic> values = snapshot.data.value;
+                    values.forEach((key, values) {
+                      lists.add(values);
                     });
-              }
-              return CircularProgressIndicator();
-            },
+                    return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: lists.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Card(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text("${SharedPrefs.getUser()[3]}: "+ lists[index]["uid"]),
+                                Text("パスワード: " +lists[index]["date"]),
+                                Text((lists[index]["division"] == 0) ? "出勤":"退勤")
+                              ],
+                            ),
+                          );
+                        });
+                  }else{
+                    return Container();
+                  }
+                }
+                return CircularProgressIndicator();
+              },
+            ),
           )
 
     );
