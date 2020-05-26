@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:836931990590:android:87c7f3b6f1b81db46acd6f",
         "android_client_info": {
-          "package_name": "com.example.attendance_app"
+          "package_name": "com.example.attendanceApp"
         }
       },
       "oauth_client": [
