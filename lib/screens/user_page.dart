@@ -28,7 +28,7 @@ class _UserPageState extends State<UserPage> {
               future: _stampRef.orderByChild("uid").equalTo(SharedPrefs.getUser()[3]).once(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if(snapshot.data == null){
+                  if(snapshot.data != null){
                     lists.clear();
                     Map<dynamic, dynamic> values = snapshot.data.value;
                     values.forEach((key, values) {
@@ -50,7 +50,9 @@ class _UserPageState extends State<UserPage> {
                           );
                         });
                   }else{
-                    return Container();
+                    return Container(
+                      child: Text("データが無い"),
+                    );
                   }
                 }
                 return CircularProgressIndicator();

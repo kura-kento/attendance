@@ -95,6 +95,7 @@ class _LoginPageState extends State<LoginPage> {
           builder: (context) {
               if(userSearch.length != 0){
         //      _basicsFlash(duration: Duration(seconds: 2),text: "ログインに成功しました。");
+                //0：会社番号、１：社員番号、2：名前、３：uid番号、４：管理者区分
               SharedPrefs.setUser([userSearch[0].companyId,userSearch[0].employeeId,userSearch[0].name,userSearch[0].uid,userSearch[0].division.toString()]);
                 return QrScan();
               }else {

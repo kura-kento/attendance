@@ -37,14 +37,14 @@ class _QrScanState extends State<QrScan> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 FlatButton(
                   color: Colors.redAccent,
                   child: Text('出勤', style: TextStyle(color: Colors.white),),
                   onPressed: (){
                     division=0;
-                    scan();
+                    SharedPrefs.getUser()[4] != "0" ? scan():_stampRef.push().set(Stamp(SharedPrefs.getUser()[3],DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now()),division).toJson());
                   },
                 ),
                 FlatButton(
@@ -52,7 +52,7 @@ class _QrScanState extends State<QrScan> {
                   child: Text('退勤', style: TextStyle(color: Colors.white),),
                   onPressed: (){
                     division=1;
-                    scan();
+                    SharedPrefs.getUser()[4] != "0" ? scan():_stampRef.push().set(Stamp(SharedPrefs.getUser()[3],DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now()),division).toJson());;
                   },
                 ),
               ],

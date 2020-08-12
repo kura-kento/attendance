@@ -37,6 +37,7 @@ dependencies:
   intl: ^0.16.0
   flash: "^1.2.0"
   flutter_secure_storage: ^3.3.3
+  characters: ^1.0.0
 
 dev_dependencies:
   flutter_test:
