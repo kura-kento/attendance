@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:attendance_app/main.dart';
 import 'package:attendance_app/models/user.dart';
 import 'package:attendance_app/screens/qr_scan.dart';
@@ -145,7 +147,15 @@ class _InputPageState extends State<InputPage> {
    save(){
     _mainReference.push().set(User(companyController.text, employeeController.text,nameController.text,widget.uid,int.parse(adminController.text)).toJson());
     FocusScope.of(context).requestFocus(FocusNode());
-    SharedPrefs.setUser([companyController.text, employeeController.text,nameController.text,widget.uid,adminController.text]);
+    SharedPrefs.setUserMap(
+        json.encode({
+          'companyId': companyController.text,
+          'employeeId': employeeController.text,
+          'name': nameController.text,
+          'uid': widget.uid,
+          'division': adminController.text,
+        })
+    );
       //ログイン状態いじ
     SharedPrefs.setLogin(widget.uid);
   }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:attendance_app/main.dart';
 import 'package:attendance_app/models/stamp.dart';
 import 'package:attendance_app/screens/user_page.dart';
@@ -30,39 +32,49 @@ class _QrScanState extends State<QrScan> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("スキャン"),
+        title: Text(SharedPrefs.getUserMap()['name']),
+        leading: Container(),
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                FlatButton(
-                  color: Colors.redAccent,
-                  child: Text('出勤', style: TextStyle(color: Colors.white),),
-                  onPressed: (){
-                    division=0;
-                    SharedPrefs.getUser()[4] != "0" ? scan():_stampRef.push().set(Stamp(SharedPrefs.getUser()[3],DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now()),division).toJson());
-                  },
+                Container(
+                  height: 150,
+                  width:150,
+                  child: FlatButton(
+                    color: Colors.redAccent,
+                    child: Text('出勤', style: TextStyle(color: Colors.white),),
+                    onPressed: (){
+                      division = 0;
+                      SharedPrefs.getUserMap()['division'] != 0 ? scan():stamp(SharedPrefs.getUserMap()['companyId']);
+                    },
+                  ),
                 ),
-                FlatButton(
-                  color: Colors.blueAccent,
-                  child: Text('退勤', style: TextStyle(color: Colors.white),),
-                  onPressed: (){
-                    division=1;
-                    SharedPrefs.getUser()[4] != "0" ? scan():_stampRef.push().set(Stamp(SharedPrefs.getUser()[3],DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now()),division).toJson());;
-                  },
+                Container(
+                  height:150,
+                  width:150,
+                  child: FlatButton(
+                    color: Colors.blueAccent,
+                    child: Text('退勤', style: TextStyle(color: Colors.white),),
+                    onPressed: (){
+                      division = 1;
+                      SharedPrefs.getUserMap()['division'] != 0 ? scan():stamp(SharedPrefs.getUserMap()['companyId']);
+                    },
+                  ),
                 ),
               ],
             ),
-            (scanResult != null) ? Text(scanResult.rawContent ?? "データがnull"):Text("スキャン出来ていない"),
-            Divider(color: Colors.grey,height:0),
-            logout(),
+           // (scanResult != null) ? Text(scanResult.rawContent ?? "データがnull"):Text("スキャン出来ていない"),
+
             Divider(color: Colors.grey,height:0),
 
-            (SharedPrefs.getUser()[4]=="0") ? QrImage(data: SharedPrefs.getUser()[0], version: QrVersions.auto, size: 200.0,) : Container(),
+            (SharedPrefs.getUserMap()['division'] == 0) ? QrImage(data: SharedPrefs.getUserMap()['companyId'], version: QrVersions.auto, size: 200.0,) : Container(),
+            Divider(color: Colors.grey,height:0),
+            logout(),
           ],
         ),
       ),
@@ -109,8 +121,8 @@ class _QrScanState extends State<QrScan> {
   }
 
   void stamp(companyId){
-    if(SharedPrefs.getUser()[0] == companyId){
-      _stampRef.push().set(Stamp(SharedPrefs.getUser()[3],DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now()),division).toJson());
+    if(SharedPrefs.getUserMap()['companyId'] == companyId){
+      _stampRef.push().set(Stamp(SharedPrefs.getUserMap()['uid'],DateFormat("yyyy-MM-dd HH:mm").format(DateTime.now()),"",false,false,"").toJson());
       print("stampテーブルに保存");
     }else{
       print("stampテーブルに保存が失敗");
@@ -123,7 +135,7 @@ class _QrScanState extends State<QrScan> {
          height: 50,
          child: Center(child: Text("ログアウト"))),
      onTap: () async {
-       SharedPrefs.setUser([]);
+       SharedPrefs.setUserMap(json.encode({}));
        _handleSignOut().catchError((e) => print(e));
        await Navigator.of(context).push(
          MaterialPageRoute(

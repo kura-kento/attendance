@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 import 'package:attendance_app/models/user.dart';
-import 'package:attendance_app/screens/qr_scan.dart';
+import 'package:attendance_app/screens/home.dart';
 import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -96,8 +98,19 @@ class _LoginPageState extends State<LoginPage> {
               if(userSearch.length != 0){
         //      _basicsFlash(duration: Duration(seconds: 2),text: "ログインに成功しました。");
                 //0：会社番号、１：社員番号、2：名前、３：uid番号、４：管理者区分
-              SharedPrefs.setUser([userSearch[0].companyId,userSearch[0].employeeId,userSearch[0].name,userSearch[0].uid,userSearch[0].division.toString()]);
-                return QrScan();
+             // SharedPrefs.setUser([userSearch[0].companyId,userSearch[0].employeeId,userSearch[0].name,userSearch[0].uid,userSearch[0].division.toString()]);
+
+              SharedPrefs.setUserMap(
+                json.encode({
+                  'companyId': userSearch[0].companyId,
+                  'employeeId': userSearch[0].employeeId,
+                  'name': userSearch[0].name,
+                  'uid': userSearch[0].uid,
+                  'division': userSearch[0].division,
+                })
+              );
+
+            return HomePage();
               }else {
                 print("失敗しました。");
                 return InputPage(uid: userData.uid);
