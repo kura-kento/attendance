@@ -1,3 +1,4 @@
+import 'package:attendance_app/screens/edit_page.dart';
 import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,32 +31,47 @@ class _UserPageState extends State<UserPage> {
                 shrinkWrap: true,
                 children: snapshot.data.documents.map<Widget>(
                       (doc) {
-                    return Row(
-                      children: [
-                        Expanded(
-                          flex:4,
-                          child: Container(
-                              width:50,
-                              child:Text(DateFormat('M/dd').format(doc.data["date1"].toDate()),textAlign: TextAlign.center)
-                          ),
-                        ),
-                        Expanded(
-                          flex: 15,
-                          child: Text("出勤: " + DateFormat('M月dd日 HH:mm').format(doc.data["date1"].toDate())),
-                        ),
-                        Expanded(
-                          flex: 15,
-                          child: Text("退勤: "+ (doc.data["date2"] == null ? "null":DateFormat('M月dd日 HH:mm').format(doc.data["date2"].toDate()))),
-                        ),
-                        Expanded(
-                          flex: 4,
-                          child: Container(
-                              width:50,
-                              child:Text("aa",textAlign: TextAlign.center,)
-                          ),
-                        ),
-                      ],
+                    return InkWell(
+                      onTap: () async{
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return EditPage(documentId: doc.documentID,documentMap:doc.data);
+                              },
+                            ),
+                          );
+                          setState(() {});
+                      },
+                      child: Container(
+                        height:40,
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex:4,
+                              child: Container(
+                                  width:50,
+                                  child:Text(DateFormat('M/dd').format(doc.data["date1"].toDate()),textAlign: TextAlign.center)
+                              ),
+                            ),
+                            Expanded(
+                              flex: 15,
+                              child: Text("出勤: " + DateFormat('M月dd日 HH:mm').format(doc.data["date1"].toDate())),
+                            ),
+                            Expanded(
+                              flex: 15,
+                              child: Text("退勤: "+ (doc.data["date2"] == null ? "null":DateFormat('M月dd日 HH:mm').format(doc.data["date2"].toDate()))),
+                            ),
+                            Expanded(
+                              flex: 4,
+                              child: Container(
+                                  width:50,
+                                  child:Text("aa",textAlign: TextAlign.center,)
+                              ),
+                            ),
+                          ],
 
+                        ),
+                      ),
                     );
                   },
                 ).toList(),

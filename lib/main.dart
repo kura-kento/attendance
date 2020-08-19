@@ -1,6 +1,4 @@
-import 'package:attendance_app/screens/input_page.dart';
 import 'package:attendance_app/screens/login_page.dart';
-import 'package:attendance_app/screens/qr_scan.dart';
 import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:flutter/material.dart';
 

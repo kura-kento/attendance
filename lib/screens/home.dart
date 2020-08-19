@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:attendance_app/screens/qr_scan.dart';
 import 'package:attendance_app/screens/user_page.dart';
 import 'package:flutter/cupertino.dart';
