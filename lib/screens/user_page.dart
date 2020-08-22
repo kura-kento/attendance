@@ -20,7 +20,15 @@ class _UserPageState extends State<UserPage> {
     return Scaffold(
       appBar: AppBar(
           title: Text("${SharedPrefs.getUserMap()['name']}"),
-          //leading: Container(),
+          leading: Container(),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: (){
+
+              },
+            )
+          ],
       ),
       body: StreamBuilder(
         //管理者の場合は選択した。uidのデータを見れるようにする。
@@ -43,6 +51,7 @@ class _UserPageState extends State<UserPage> {
                           setState(() {});
                       },
                       child: Container(
+                        color:colorWidget(doc.data),
                         height:40,
                         child: Row(
                           children: [
@@ -65,7 +74,7 @@ class _UserPageState extends State<UserPage> {
                               flex: 4,
                               child: Container(
                                   width:50,
-                                  child:Text("aa",textAlign: TextAlign.center,)
+                                  child:Text("残業",textAlign: TextAlign.center,)
                               ),
                             ),
                           ],
@@ -77,10 +86,6 @@ class _UserPageState extends State<UserPage> {
                 ).toList(),
               );
             },
-      ),
-      floatingActionButton: FloatingActionButton(
-              onPressed: (){
-              },
       ),
     );
   }
@@ -102,5 +107,17 @@ class _UserPageState extends State<UserPage> {
     await Firestore.instance.collection(collection).document(documentId).get();
 
     return docSnapshot.data;
+  }
+}
+
+Color colorWidget(Map data){
+  //修正してかつ承認されていない。
+  if(data["fix"] == true && data["approve"] == false) {
+    return Colors.redAccent[100];
+    //修正してかつ承認された。
+  }else if(data["fix"] == true && data["approve"] == true) {
+    return Colors.lightGreenAccent[100];
+  }else{
+    return Colors.transparent;
   }
 }

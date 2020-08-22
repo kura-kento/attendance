@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("ログイン画面"+SharedPrefs.getLogin()),
+        title: Text("ログイン画面"),
       ),
       body: Center(
         child: Column(

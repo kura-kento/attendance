@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:attendance_app/main.dart';
+import 'package:attendance_app/screens/login_page.dart';
 import 'package:attendance_app/screens/user_page.dart';
 import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:barcode_scan/barcode_scan.dart';
@@ -23,7 +24,7 @@ class _QrScanState extends State<QrScan> {
   ScanResult scanResult;
   var instance;
   QuerySnapshot querySnapshot;
-  bool buttonBool = false;
+  bool buttonBool = true;
 
   void initState() {
      instance = Firestore.instance.collection(SharedPrefs.getUserMap()["uid"]).orderBy('date1', descending: true).snapshots();
@@ -33,7 +34,8 @@ class _QrScanState extends State<QrScan> {
 
   Future<void> getData() async {
     querySnapshot = await Firestore.instance.collection(SharedPrefs.getUserMap()["uid"]).orderBy('date1', descending: true).getDocuments();
-    buttonBool = querySnapshot.documents[0]["date2"] == null ? false : true;
+    if(querySnapshot.documents.length != 0){buttonBool = querySnapshot.documents[0]["date2"] == null ? false : true;}
+
     setState(() {});
   }
 
@@ -43,7 +45,7 @@ class _QrScanState extends State<QrScan> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(SharedPrefs.getUserMap()['name']),
+        title: Text(SharedPrefs.getUserMap()['name'] ),
        // leading: Container(),
       ),
       body: Center(
@@ -78,7 +80,7 @@ class _QrScanState extends State<QrScan> {
                     onPressed: (){
                       getData();
                       querySnapshot.documents.length == 0 || querySnapshot.documents[0].data["date2"] != null ? print("date2が入っている。"):updateData(SharedPrefs.getUserMap()["uid"],querySnapshot.documents[0].documentID,querySnapshot.documents[0].data);
-                      buttonBool=true;
+                      buttonBool = true;
                       setState(() {});
                       },
                   ),
@@ -89,22 +91,35 @@ class _QrScanState extends State<QrScan> {
 
             Divider(color: Colors.grey,height:0),
 
-            (SharedPrefs.getUserMap()['division'] == 0) ? QrImage(data: SharedPrefs.getUserMap()['companyId'], version: QrVersions.auto, size: 200.0,) : Container(),
             Divider(color: Colors.grey,height:0),
             logout(),
           ],
         ),
       ),
+      //(SharedPrefs.getUserMap()['division'] == 0) ?
       floatingActionButton: FloatingActionButton(
-        onPressed: () async{
-          await Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) {
-                return UserPage();
-              },
-            ),
+          child: Container(
+            padding: EdgeInsets.all(10.0),
+            //color: Colors.white,
+            child: Image.asset('assets/images/QRcode.png'),
+          ),
+        onPressed: (){
+          showDialog(
+            context: context,
+            builder: (_) {
+              return AlertDialog(
+                //title: Text("タイトル"),
+                content:  Container(width:250,height:250,child: QrImage(data: SharedPrefs.getUserMap()['companyId'], version: QrVersions.auto)),
+                actions: <Widget>[
+                  // ボタン領域
+                  FlatButton(
+                    child: Text("OK"),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              );
+            },
           );
-          setState(() {});
         },
       ),
     );
@@ -145,6 +160,7 @@ class _QrScanState extends State<QrScan> {
         "fix": false,//修正
         "approve": false,//承認
         "memo": "",
+        "breakTime": null,
         "createdAt": DateTime.now()
       };
       setData(SharedPrefs.getUserMap()['uid'],data);
@@ -165,7 +181,7 @@ class _QrScanState extends State<QrScan> {
        await Navigator.of(context).push(
          MaterialPageRoute(
            builder: (context) {
-             return MyApp();
+             return LoginPage();
            },
          ),
        );
@@ -190,6 +206,7 @@ void setData(String collection, Map data) {
 //更新
 void updateData(String collection, String documentID, Map data) {
   data["date2"] = DateTime.now();
+  data["breakTime"]= 120;
   Firestore.instance.collection(collection).document(documentID).updateData(data);
 }
 

@@ -1,5 +1,7 @@
 import 'package:attendance_app/screens/qr_scan.dart';
+import 'package:attendance_app/screens/setting_page.dart';
 import 'package:attendance_app/screens/user_page.dart';
+import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +20,8 @@ class _HomePageState extends State<HomePage> {
   final _pageWidgets = [
     QrScan(),
     UserPage(),
-    UserPage(),
+    SettingPage(),
+    QrScan(),
   ];
 
   @override
@@ -40,11 +43,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           bottomNavigationBar:BottomNavigationBar(
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(icon: Icon(Icons.access_time), title: Text('勤怠')),
-              BottomNavigationBarItem(icon: Icon(Icons.equalizer), title: Text('データ')),
-              BottomNavigationBarItem(icon: Icon(Icons.settings), title: Text('申請')),
-            ],
+            items: bottomNavi(),
             iconSize: 30.0,
             selectedFontSize: 15.0,
             unselectedFontSize: 12.0,
@@ -56,4 +55,18 @@ class _HomePageState extends State<HomePage> {
         );
   }
   void _onItemTapped(int index) => setState(() => _currentIndex = index );
+}
+
+List<BottomNavigationBarItem> bottomNavi(){
+ List<BottomNavigationBarItem> _cache = [BottomNavigationBarItem(icon: Icon(Icons.access_time), title: Text('勤怠')),
+                                         BottomNavigationBarItem(icon: Icon(Icons.equalizer), title: Text('データ')),
+                                         BottomNavigationBarItem(icon: Icon(Icons.settings), title: Text('設定')),
+                                        ];
+
+ if(SharedPrefs.getUserMap()["division"]==0){
+   _cache.add(
+       BottomNavigationBarItem(icon: Icon(Icons.assignment_turned_in), title: Text('申請'))
+   );
+ }
+ return _cache;
 }
