@@ -1,3 +1,4 @@
+import 'package:attendance_app/screens/apply_page.dart';
 import 'package:attendance_app/screens/qr_scan.dart';
 import 'package:attendance_app/screens/setting_page.dart';
 import 'package:attendance_app/screens/user_page.dart';
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage> {
     QrScan(),
     UserPage(),
     SettingPage(),
-    QrScan(),
+    ApplyPage(),
   ];
 
   @override

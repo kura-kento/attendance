@@ -7,6 +7,7 @@ class SharedPrefs {
 
   static final login = 'login';
   static final userMap = "userMap";
+  static final deadline = "deadline";
   static SharedPreferences _sharedPreferences;
 
   static Future<void> setInstance() async {
@@ -21,4 +22,7 @@ class SharedPrefs {
   static Future<bool> setUserMap(String value) => _sharedPreferences.setString(userMap, value);
   static Map<String,dynamic> getUserMap() => json.decode(_sharedPreferences.getString(userMap)) ?? {};
   // 'companyId','employeeId','name','uid','division',
+
+  static Future<bool> setDeadline(String value) => _sharedPreferences.setString(deadline, value);
+  static String getDeadline() => _sharedPreferences.getString(deadline) ?? '末日';
 }

@@ -19,7 +19,7 @@ class _EditPageState extends State<EditPage> {
   @override
   void initState() {
     date1Controller = TextEditingController(text:widget.documentMap["date1"].toDate().toString());
-    date2Controller = TextEditingController(text:widget.documentMap["date2"].toDate().toString());
+    date2Controller = TextEditingController(text:widget.documentMap["date2"] == null ? "" : widget.documentMap["date2"].toDate().toString());
 
     super.initState();
   }
@@ -39,7 +39,7 @@ class _EditPageState extends State<EditPage> {
       body:Column(
         children:[
           Text(widget.documentMap["date1"].toDate().toString()),
-          Text(widget.documentMap["date2"].toDate().toString()),
+          Text(widget.documentMap["date2"] == null ? "" : widget.documentMap["date2"].toDate().toString()),
           TextField(
             controller: date1Controller,
           ),

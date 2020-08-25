@@ -64,8 +64,8 @@ class _QrScanState extends State<QrScan> {
                     onPressed: (){
                       //押した時にgetData()の処理が終わっていないためエラーが出る。
                       getData();
-                       querySnapshot.documents.length == 0 || querySnapshot.documents[0].data["date2"] != null ? stamp(SharedPrefs.getUserMap()['companyId']) : print("退勤処理ができてません。");
-                    //  SharedPrefs.getUserMap()['division'] != 0 ? scan() : stamp(SharedPrefs.getUserMap()['companyId']);
+                       querySnapshot.documents.length == 0 || querySnapshot.documents[0].data["date2"] != null ? SharedPrefs.getUserMap()['division'] != 0 ? scan() : stamp(SharedPrefs.getUserMap()['companyId']) : print("退勤処理ができてません。");
+
                       buttonBool=false;
                       setState(() {});
                     },
