@@ -2,6 +2,8 @@ import 'package:attendance_app/utils/shared_prefs.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 class SettingPage extends StatefulWidget {
   @override
   _SettingPageState createState() => _SettingPageState();
@@ -71,9 +73,23 @@ class _SettingPageState extends State<SettingPage> {
                   )
                 ],
               ),
+              RaisedButton(
+                child:Text("URL"),
+                onPressed: _launchURL,
+              )
             ],
           )
         ),
     );
   }
+
+  _launchURL() async {
+    const url = 'http://hamusoku.com/';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
 }

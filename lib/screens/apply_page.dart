@@ -53,7 +53,7 @@ class _ApplyPageState extends State<ApplyPage> {
       body: Container(
       child:Column(
         children: [
-          FlatButton(
+          RaisedButton(
             child: Text(itemName+">"),
             onPressed: (){
               showCupertinoModalPopup(
@@ -84,9 +84,12 @@ class _ApplyPageState extends State<ApplyPage> {
                     style: TextStyle(fontSize: 18)),
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.date_range),
-                onPressed: () => _selectDate(context),
+              Container(
+                color: Colors.grey[300],
+                child: IconButton(
+                  icon: Icon(Icons.date_range),
+                  onPressed: () => _selectDate(context),
+                ),
               ),
               Text(_labelText,
                   style: TextStyle(fontSize: 18)),
